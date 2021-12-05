@@ -1,0 +1,64 @@
+import json
+import pathlib
+from typing import List
+
+import speech_recognition as sr
+import abc
+from pydub import AudioSegment
+
+
+class RecognitionTarget:
+    def __init__(self):
+        self.speech_eng = sr.Recognizer()
+        self.lang = "de-DE"
+
+    @abc.abstractmethod
+    def convert(self, file_ogg) -> List[pathlib.Path]:
+        pass
+
+    @abc.abstractmethod
+    def recognize_speech(self, wav_file) -> str:
+        pass
+
+    def _get_data(self, wav_file: pathlib.Path):
+        with sr.AudioFile(str(wav_file)) as f:
+            data = self.speech_eng.record(f)
+        return data
+
+
+class Google(RecognitionTarget):
+    def convert(self, file_ogg):
+        sound = AudioSegment.from_ogg(file_ogg)
+        out_file = file_ogg.with_suffix('.wav')
+        sound.export(out_f = out_file, format = 'wav')
+        return [out_file]
+
+    def recognize_speech(self, wav_file):
+        return self.speech_eng.recognize_google(self._get_data(wav_file = wav_file), language = self.lang)
+
+
+class Azure(RecognitionTarget):
+    def __init__(self):
+        super().__init__()
+        self.seg_len = 60
+        with open('config.json') as json_file:
+            self.__API_KEY__ = json.load(json_file)['AZURE_key']
+        self.service_loc = "westeurope"
+
+    def convert(self, file_ogg):
+        sound = AudioSegment.from_ogg(file_ogg)
+        files = []
+        i = 0
+        start = 0
+        end = start + self.seg_len
+        while start < sound.duration_seconds:
+            files.append(file_ogg.with_suffix(f'.{i}.wav'))
+            sound[start * 1000:min(end, sound.duration_seconds) * 1000].export(files[-1], format = "wav")
+            start = end
+            end += self.seg_len
+            i += 1
+        return files
+
+    def recognize_speech(self, wav_file):
+        return self.speech_eng.recognize_azure(self._get_data(wav_file), language = self.lang, key = self.__API_KEY__,
+                                               location = self.service_loc)
