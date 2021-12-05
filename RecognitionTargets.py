@@ -37,6 +37,8 @@ class RecognitionTarget:
             return AudioSegment.from_ogg(in_file)
         elif in_file.suffix == ".opus":
             return AudioSegment.from_file(in_file, codec = "opus")
+        elif in_file.suffix == ".m4a":
+            return AudioSegment.from_file(in_file)
 
 
 class Google(RecognitionTarget):

@@ -39,7 +39,8 @@ def __download_file(update: Update, context: CallbackContext, folder_path: pathl
 
     file = context.bot.getFile(file_id)
     print(file)
-    filename = folder_path / f'voice_{update.update_id}.ogg'
+    filename = folder_path / f'voice_{update.update_id}.{pathlib.Path(file["file_path"]).suffix}'
+    print(filename)
     file.download(filename)
 
     return pathlib.Path(filename)
