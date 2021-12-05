@@ -1,10 +1,14 @@
 import json
 import logging
+import os
+import time
 
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 # Enable logging
+from transcriber import transcribe
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -22,12 +26,10 @@ def help(update, context):
 
 
 def voice(update: Update, context: CallbackContext):
-    file = context.bot.getFile(update.message.voice.file_id)
-    file.download(f'./downloads/voice_{update.update_id}.ogg')
-    update.message.reply_text('Voice message ist angekommen.')
+    transcribe(update, context)
 
 
-def echo(update, context):
+def unsupported(update, context):
     update.message.reply_text(update.message.text)
 
 
@@ -55,7 +57,7 @@ def main():
     dp.add_handler(CommandHandler("help", help))
 
     # on noncommand i.e message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text, echo))
+    dp.add_handler(MessageHandler(Filters.text, unsupported))
 
     dp.add_handler(MessageHandler(Filters.voice, voice))
 
