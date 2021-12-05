@@ -4,7 +4,7 @@ from pathlib import Path
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from RecognitionTargets import Google
+from RecognitionTargets import Google, Azure, APIProviders
 
 
 def transcribe(update: Update, context: CallbackContext):
@@ -16,8 +16,15 @@ def transcribe(update: Update, context: CallbackContext):
 
     filename_no_ext = Path(filename).stem
 
-    reco_target = Google()
-    files = reco_target.convert(file_ogg = filename)
+    # get the preferred api provider
+    provider = context.user_data.get('api_provider', APIProviders.azure.value)
+    reco_target = None
+    if provider == APIProviders.google.value:
+        reco_target = Google()
+    elif provider == APIProviders.azure.value:
+        reco_target = Azure()
+
+    files = reco_target.convert(in_file = filename)
     for file in files:
         text = reco_target.recognize_speech(file)
         update.message.reply_text(text)

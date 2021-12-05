@@ -8,8 +8,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 from RecognitionTargets import APIProviders
 from transcriber import transcribe
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level = logging.INFO)
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +33,22 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
+def set_api_provider(update: Update, context):
+    import re
+    provider = [*re.findall(r'\/api ([\w]+)', update.message.text), None][0]
+
+    supported_providers = [p.value for p in APIProviders]
+    if provider in supported_providers:
+        context.user_data['api_provider'] = provider
+        update.message.reply_text(f'Der API Provider wurde geupdatet auf {provider}')
+    elif provider is None:
+        update.message.reply_text(
+            f"Aktueller API Provider ist: {context.user_data.get('api_provider', APIProviders.azure.value)}")
+    else:
+        update.message.reply_text(
+            f'{provider} ist kein unterstützter Provider! Erlaubt sind: {str(supported_providers)[1:-1]}')
+
+
 def main():
     # get the token
     with open('config.json') as json_file:
@@ -50,6 +66,7 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("api", set_api_provider))
 
     dp.add_handler(MessageHandler(Filters.voice, voice))
 
