@@ -33,7 +33,7 @@ class RecognitionTarget:
 
     @staticmethod
     def _get_sound(in_file: pathlib.Path):
-        if in_file.suffix == ".ogg":
+        if in_file.suffix in [".ogg", ".oga"]:
             return AudioSegment.from_ogg(in_file)
         elif in_file.suffix == ".opus":
             return AudioSegment.from_file(in_file, codec = "opus")
