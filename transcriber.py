@@ -30,7 +30,15 @@ def transcribe(update: Update, context: CallbackContext):
 
 def __download_file(update: Update, context: CallbackContext, folder_path: pathlib.Path) -> pathlib.Path:
     # Download the file
-    file = context.bot.getFile(update.message.voice.file_id)
+    if update.message.audio is not None:
+        file_id = update.message.audio.file_id
+    elif update.message.voice is not None:
+        file_id = update.message.voice.file_id
+    else:
+        raise RuntimeError("No supported message type found")
+
+    file = context.bot.getFile(file_id)
+    print(file)
     filename = folder_path / f'voice_{update.update_id}.ogg'
     file.download(filename)
 

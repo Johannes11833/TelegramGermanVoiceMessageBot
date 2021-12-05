@@ -7,6 +7,7 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 # Enable logging
+from RecognitionTargets import APIProviders
 from transcriber import transcribe
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -27,10 +28,6 @@ def help(update, context):
 
 def voice(update: Update, context: CallbackContext):
     transcribe(update, context)
-
-
-def unsupported(update, context):
-    update.message.reply_text(update.message.text)
 
 
 def error(update, context):
@@ -56,10 +53,9 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
 
-    # on noncommand i.e message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text, unsupported))
-
     dp.add_handler(MessageHandler(Filters.voice, voice))
+
+    dp.add_handler(MessageHandler(Filters.audio, voice))
 
     # log all errors
     dp.add_error_handler(error)

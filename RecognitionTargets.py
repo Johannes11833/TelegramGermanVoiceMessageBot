@@ -1,10 +1,16 @@
 import json
 import pathlib
+from enum import Enum
 from typing import List
 
 import speech_recognition as sr
 import abc
 from pydub import AudioSegment
+
+
+class APIProviders(Enum):
+    azure = "azure"
+    google = "google"
 
 
 class RecognitionTarget:
@@ -13,7 +19,7 @@ class RecognitionTarget:
         self.lang = "de-DE"
 
     @abc.abstractmethod
-    def convert(self, file_ogg) -> List[pathlib.Path]:
+    def convert(self, in_file) -> List[pathlib.Path]:
         pass
 
     @abc.abstractmethod
@@ -25,11 +31,18 @@ class RecognitionTarget:
             data = self.speech_eng.record(f)
         return data
 
+    @staticmethod
+    def _get_sound(in_file: pathlib.Path):
+        if in_file.suffix == ".ogg":
+            return AudioSegment.from_ogg(in_file)
+        elif in_file.suffix == ".opus":
+            return AudioSegment.from_file(in_file, codec = "opus")
+
 
 class Google(RecognitionTarget):
-    def convert(self, file_ogg):
-        sound = AudioSegment.from_ogg(file_ogg)
-        out_file = file_ogg.with_suffix('.wav')
+    def convert(self, in_file):
+        sound = self._get_sound(in_file)
+        out_file = in_file.with_suffix('.wav')
         sound.export(out_f = out_file, format = 'wav')
         return [out_file]
 
@@ -45,14 +58,14 @@ class Azure(RecognitionTarget):
             self.__API_KEY__ = json.load(json_file)['AZURE_key']
         self.service_loc = "westeurope"
 
-    def convert(self, file_ogg):
-        sound = AudioSegment.from_ogg(file_ogg)
+    def convert(self, in_file):
+        sound = self._get_sound(in_file)
         files = []
         i = 0
         start = 0
         end = start + self.seg_len
         while start < sound.duration_seconds:
-            files.append(file_ogg.with_suffix(f'.{i}.wav'))
+            files.append(in_file.with_suffix(f'.{i}.wav'))
             sound[start * 1000:min(end, sound.duration_seconds) * 1000].export(files[-1], format = "wav")
             start = end
             end += self.seg_len
