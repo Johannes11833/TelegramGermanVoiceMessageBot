@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update, context):
-    update.message.reply_text('Moin Meister! Ich bin ein Test python bot und kann aktuell noch fast nix.')
+    update.message.reply_text('Moin Meister! Schick mir deine tollsten Sprachnachrichten.')
 
 
 def help(update, context):
@@ -68,8 +68,8 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("api", set_api_provider))
 
+    # add handlers for voice-messages and audio files.
     dp.add_handler(MessageHandler(Filters.voice, voice))
-
     dp.add_handler(MessageHandler(Filters.audio, voice))
 
     # log all errors
