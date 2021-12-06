@@ -1,7 +1,7 @@
 import json
 import logging
 
-from telegram import Update
+from telegram import Update, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 # Enable logging
@@ -21,7 +21,9 @@ def start(update, context):
 
 
 def help(update, context):
-    update.message.reply_text('<b>Befehle</b>: \'api <api_provider>\'')
+    update.message.reply_text(
+        '<p><strong>Funktionsweise</strong>:</p><p>Schicke mir hier einfach deine Voice Message und ich werde sie f&uuml;r dich transkribieren.</p><p><strong>Befehle</strong>:</p><p>/api</p>',
+        parse_mode=ParseMode.HTML)
 
 
 def voice(update: Update, context: CallbackContext):
