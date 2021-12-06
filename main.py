@@ -8,8 +8,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 from RecognitionTargets import APIProviders
 from transcriber import transcribe
 
-logging.basicConfig(format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level = logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def start(update, context):
 
 
 def help(update, context):
-    update.message.reply_text('Help!')
+    update.message.reply_text('<b>Befehle</b>: \'api <api_provider>\'')
 
 
 def voice(update: Update, context: CallbackContext):
@@ -58,7 +58,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater(telegram_token, use_context = True)
+    updater = Updater(telegram_token, use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
