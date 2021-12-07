@@ -12,7 +12,7 @@ def transcribe(update: Update, context: CallbackContext):
     output_path.mkdir(exist_ok=True)
     filename = __download_file(update, context, output_path)
 
-    update.message.reply_text('Wird bearbeitet...')
+    msg_processing = update.message.reply_text('Wird bearbeitet...')
 
     filename_no_ext = Path(filename).stem
 
@@ -27,7 +27,10 @@ def transcribe(update: Update, context: CallbackContext):
     files = reco_target.convert(in_file=filename)
     for file in files:
         text = reco_target.recognize_speech(file)
-        update.message.reply_text(text)
+        update.message.reply_text(text, reply_to_message_id=update.message.message_id)
+
+    # delete the processing message
+    msg_processing.delete()
 
     __cleanup(filename_no_ext, output_path)
 
