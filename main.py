@@ -17,13 +17,13 @@ logger = logging.getLogger(__name__)
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update, context):
-    update.message.reply_text('Moin Meister! Schick mir deine tollsten Sprachnachrichten.')
+    update.message.reply_text('Moin Meister! Schick mir deine tollsten Sprachnachrichten. \n\nGebe /help ein, um alle Befehle zu sehen.')
 
 
 def help(update, context):
     update.message.reply_text(
-        '<p><strong>Funktionsweise</strong>:</p><p>Schicke mir hier einfach deine Voice Message und ich werde sie f&uuml;r dich transkribieren.</p><p><strong>Befehle</strong>:</p><p>/api &lt;provider&gt; - Legt die zum Transkribieren zu verwendende API fest. Wird der Provider nicht angegeben, wird die aktuell verwendete API zur&uuml;ckgegeben.</p>',
-        parse_mode=ParseMode.HTML)
+        '<strong>Funktionsweise</strong>:\nSchicke mir hier einfach deine Voice Message und ich werde sie für dich transkribieren.\n\n<strong>Befehle</strong>:\n/api &lt;provider&gt; - Legt die zum Transkribieren zu verwendende API fest. Wird der Provider nicht angegeben, wird die aktuell verwendete API zurückgegeben.',
+        parse_mode='HTML')
 
 
 def voice(update: Update, context: CallbackContext):
