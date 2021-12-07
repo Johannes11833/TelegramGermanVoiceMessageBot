@@ -48,7 +48,8 @@ def __download_file(update: Update, context: CallbackContext, folder_path: pathl
 
     # save the length of the voice message
     duration = update.message.voice.duration
-    context.user_data['max_message_length'] = duration
+    if duration > context.user_data.get('max_message_length', 0):
+        context.user_data['max_message_length'] = duration
 
     return pathlib.Path(filename)
 
