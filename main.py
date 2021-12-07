@@ -22,7 +22,7 @@ def start(update, context):
 
 def help(update, context):
     update.message.reply_text(
-        '<p><strong>Funktionsweise</strong>:</p><p>Schicke mir hier einfach deine Voice Message und ich werde sie f&uuml;r dich transkribieren.</p><p><strong>Befehle</strong>:</p><p>/api</p>',
+        '<p><strong>Funktionsweise</strong>:</p><p>Schicke mir hier einfach deine Voice Message und ich werde sie f&uuml;r dich transkribieren.</p><p><strong>Befehle</strong>:</p><p>/api &lt;provider&gt; - Legt die zum Transkribieren zu verwendende API fest. Wird der Provider nicht angegeben, wird die aktuell verwendete API zur&uuml;ckgegeben.</p>',
         parse_mode=ParseMode.HTML)
 
 
