@@ -50,13 +50,13 @@ def error(update, context):
 
 def set_api_provider(update: Update, context):
     import re
-    provider = [*re.findall(r'\/api ([\w]+)', update.message.text), None][0]
+    provider: str = [*re.findall(r'\/api ([\w]+)', update.message.text), ''][0].lower().strip()
 
     supported_providers = [p.value for p in APIProviders]
     if provider in supported_providers:
         context.user_data['api_provider'] = provider
         update.message.reply_text(f'Der API Provider wurde geupdatet auf {provider}')
-    elif provider is None:
+    elif not provider:
         update.message.reply_text(
             f"Aktueller API Provider ist: {context.user_data.get('api_provider', APIProviders.azure.value)}")
     else:
