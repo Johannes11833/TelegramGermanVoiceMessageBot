@@ -24,7 +24,7 @@ def start(update, context):
 
 def help(update, context):
     update.message.reply_text(
-        '<strong>Funktionsweise</strong>:\nSchicke mir hier einfach deine Voice Message und ich werde sie für dich transkribieren.\n\n<strong>Befehle</strong>:\n/api &lt;provider&gt; - Legt die zum Transkribieren zu verwendende API fest. Wird der Provider nicht angegeben, wird die aktuell verwendete API zurückgegeben.',
+        '<strong>Funktionsweise</strong>:\nSchicke mir hier einfach deine Voice Message und ich werde sie für dich transkribieren.\n\n<strong>Befehle</strong>:\n/api &lt;provider&gt; - Legt die zum Transkribieren zu verwendende API fest. \n/highscore Gibt die Länge deiner längsten Sprachnachricht aus.',
         parse_mode='HTML')
 
 
