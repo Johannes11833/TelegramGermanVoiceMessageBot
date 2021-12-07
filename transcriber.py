@@ -9,7 +9,7 @@ from RecognitionTargets import Google, Azure, APIProviders
 
 def transcribe(update: Update, context: CallbackContext):
     output_path = pathlib.Path('./downloads')
-    output_path.mkdir(exist_ok = True)
+    output_path.mkdir(exist_ok=True)
     filename = __download_file(update, context, output_path)
 
     update.message.reply_text('Wird bearbeitet...')
@@ -24,12 +24,15 @@ def transcribe(update: Update, context: CallbackContext):
     elif provider == APIProviders.azure.value:
         reco_target = Azure()
 
-    files = reco_target.convert(in_file = filename)
+    files = reco_target.convert(in_file=filename)
     for file in files:
         text = reco_target.recognize_speech(file)
         update.message.reply_text(text)
 
     __cleanup(filename_no_ext, output_path)
+
+    # increase the message count
+    context.user_data['message_count'] = context.user_data.get('message_count', 0) + 1
 
 
 def __download_file(update: Update, context: CallbackContext, folder_path: pathlib.Path) -> pathlib.Path:

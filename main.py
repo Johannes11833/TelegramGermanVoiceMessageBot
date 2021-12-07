@@ -24,7 +24,10 @@ def start(update, context):
 
 def help(update, context):
     update.message.reply_text(
-        '<strong>Funktionsweise</strong>:\nSchicke mir hier einfach deine Voice Message und ich werde sie für dich transkribieren.\n\n<strong>Befehle</strong>:\n/api &lt;provider&gt; - Legt die zum Transkribieren zu verwendende API fest. \n/highscore Gibt die Länge deiner längsten Sprachnachricht aus.',
+        '<strong>Funktionsweise</strong>:\nSchicke mir hier einfach deine Voice Message und ich werde sie für dich '
+        'transkribieren.'
+        '\n\n<strong>Befehle</strong>:\n/api &lt;provider&gt; - Legt die zum Transkribieren zu verwendende API fest. '
+        '\n/highscore Gibt die Länge deiner längsten Sprachnachricht aus.',
         parse_mode='HTML')
 
 
@@ -41,6 +44,11 @@ def highscore(update: Update, context: CallbackContext):
         update.message.reply_text(
             f'Deine Längste Sprachnachricht: <strong>{max_length} Sekunden </strong>',
             parse_mode='HTML')
+
+
+def message_count(update: Update, context: CallbackContext):
+    update.message.reply_text(f'Bisher transkribierte Sprachnachrichten: '
+                              f'<b>{context.user_data.get("message_count", 0)}</b>',parse_mode='HTML')
 
 
 def error(update, context):
@@ -87,6 +95,7 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("api", set_api_provider))
     dp.add_handler(CommandHandler("highscore", highscore))
+    dp.add_handler(CommandHandler("count", message_count))
 
     # add handlers for voice-messages and audio files.
     dp.add_handler(MessageHandler(Filters.voice, voice))
