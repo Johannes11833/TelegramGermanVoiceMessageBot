@@ -1,4 +1,5 @@
-/config.json
+/data/config.json
+/data/bot_data.pkl
 /downloads
 /.idea
 /speech_recognition/

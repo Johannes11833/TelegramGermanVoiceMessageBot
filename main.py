@@ -1,8 +1,9 @@
 import json
 import logging
+import pathlib
 
-from telegram import Update, ParseMode
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, PicklePersistence
 
 # Enable logging
 from RecognitionTargets import APIProviders
@@ -17,7 +18,8 @@ logger = logging.getLogger(__name__)
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update, context):
-    update.message.reply_text('Moin Meister! Schick mir deine tollsten Sprachnachrichten. \n\nGebe /help ein, um alle Befehle zu sehen.')
+    update.message.reply_text(
+        'Moin Meister! Schick mir deine tollsten Sprachnachrichten. \n\nGebe /help ein, um alle Befehle zu sehen.')
 
 
 def help(update, context):
@@ -28,6 +30,17 @@ def help(update, context):
 
 def voice(update: Update, context: CallbackContext):
     transcribe(update, context)
+
+
+def highscore(update: Update, context: CallbackContext):
+    max_length = context.user_data.get("max_message_length", None)
+
+    if max_length is None:
+        update.message.reply_text('Du hast mir noch keine Sprachnachricht geschickt')
+    else:
+        update.message.reply_text(
+            f'Deine Längste Sprachnachricht: <strong>{max_length} Sekunden </strong>',
+            parse_mode='HTML')
 
 
 def error(update, context):
@@ -52,15 +65,19 @@ def set_api_provider(update: Update, context):
 
 
 def main():
+    # create Data folder and initialize PicklePersistence
+    pathlib.Path('./data').mkdir(exist_ok=True)
+    persistence = PicklePersistence('./data/bot_data.pkl')
+
     # get the token
-    with open('config.json') as json_file:
+    with open('data/config.json') as json_file:
         telegram_token = json.load(json_file)['telegram_token']
 
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater(telegram_token, use_context=True)
+    updater = Updater(telegram_token, use_context=True, persistence=persistence)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -69,6 +86,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("api", set_api_provider))
+    dp.add_handler(CommandHandler("highscore", highscore))
 
     # add handlers for voice-messages and audio files.
     dp.add_handler(MessageHandler(Filters.voice, voice))

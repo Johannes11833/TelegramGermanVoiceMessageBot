@@ -41,9 +41,14 @@ def __download_file(update: Update, context: CallbackContext, folder_path: pathl
     else:
         raise RuntimeError("No supported message type found")
 
+    # download the voice message
     file = context.bot.getFile(file_id)
     filename = folder_path / f'voice_{update.update_id}{pathlib.Path(file["file_path"]).suffix}'
     file.download(filename)
+
+    # save the length of the voice message
+    duration = update.message.voice.duration
+    context.user_data['max_message_length'] = duration
 
     return pathlib.Path(filename)
 

@@ -56,7 +56,7 @@ class Azure(RecognitionTarget):
     def __init__(self):
         super().__init__()
         self.seg_len = 60
-        with open('config.json') as json_file:
+        with open('data/config.json') as json_file:
             self.__API_KEY__ = json.load(json_file)['AZURE_key']
         self.service_loc = "westeurope"
 
