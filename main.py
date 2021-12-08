@@ -2,6 +2,7 @@ import json
 import logging
 import pathlib
 
+import requests as requests
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, PicklePersistence
 
@@ -48,7 +49,17 @@ def highscore(update: Update, context: CallbackContext):
 
 def message_count(update: Update, context: CallbackContext):
     update.message.reply_text(f'Bisher transkribierte Sprachnachrichten: '
-                              f'<b>{context.user_data.get("message_count", 0)}</b>',parse_mode='HTML')
+                              f'<b>{context.user_data.get("message_count", 0)}</b>', parse_mode='HTML')
+
+
+def stats(update: Update, context: CallbackContext):
+    update.message.reply_text(f'Hier sind deine Statistiken:'
+                              f'\n\nLängste Nachricht: <b>{context.user_data.get("max_message_length", 0)} Sekunden</b>'
+                              f'\nAnzahl Nachrichten: <b>{context.user_data.get("message_count", 0)}</b>',
+                              parse_mode='HTML')
+
+    # send the user a random meme
+    update.message.reply_photo(_get_meme())
 
 
 def error(update, context):
@@ -70,6 +81,11 @@ def set_api_provider(update: Update, context):
     else:
         update.message.reply_text(
             f'{provider} ist kein unterstützter Provider! Erlaubt sind: {str(supported_providers)[1:-1]}')
+
+
+def _get_meme() -> str:
+    resp = requests.get(url='https://meme-api.herokuapp.com/gimme')
+    return resp.json()['url']
 
 
 def main():
@@ -94,6 +110,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("api", set_api_provider))
+    dp.add_handler(CommandHandler("stats", stats))
     dp.add_handler(CommandHandler("highscore", highscore))
     dp.add_handler(CommandHandler("count", message_count))
 
