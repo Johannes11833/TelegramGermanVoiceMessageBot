@@ -42,8 +42,10 @@ def __download_file(update: Update, context: CallbackContext, folder_path: pathl
     # Download the file
     if update.message.audio is not None:
         file_id = update.message.audio.file_id
+        duration = update.message.audio.duration
     elif update.message.voice is not None:
         file_id = update.message.voice.file_id
+        duration = update.message.voice.duration
     else:
         raise RuntimeError("No supported message type found")
 
@@ -53,7 +55,6 @@ def __download_file(update: Update, context: CallbackContext, folder_path: pathl
     file.download(filename)
 
     # save the length of the voice message
-    duration = update.message.voice.duration
     if duration > context.user_data.get('max_message_length', 0):
         context.user_data['max_message_length'] = duration
 
