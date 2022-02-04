@@ -13,21 +13,24 @@ def transcribe(update: Update, context: CallbackContext):
     filename = __download_file(update, context, output_path)
 
     msg_processing = update.message.reply_text('Wird bearbeitet...')
+    try:
+        filename_no_ext = Path(filename).stem
 
-    filename_no_ext = Path(filename).stem
+        # get the preferred api provider
+        provider = context.user_data.get('api_provider', APIProviders.azure.value)
+        reco_target = None
+        if provider == APIProviders.google.value:
+            reco_target = Google()
+        elif provider == APIProviders.azure.value:
+            reco_target = Azure()
 
-    # get the preferred api provider
-    provider = context.user_data.get('api_provider', APIProviders.azure.value)
-    reco_target = None
-    if provider == APIProviders.google.value:
-        reco_target = Google()
-    elif provider == APIProviders.azure.value:
-        reco_target = Azure()
-
-    files = reco_target.convert(in_file=filename)
-    for file in files:
-        text = reco_target.recognize_speech(file)
-        update.message.reply_text(text, reply_to_message_id=update.message.message_id)
+        files = reco_target.convert(in_file=filename)
+        for file in files:
+            text = reco_target.recognize_speech(file)
+            update.message.reply_text(text, reply_to_message_id=update.message.message_id)
+    except Exception as e:
+        update.message.reply_text("❌ An Error occured ❌", reply_to_message_id=update.message.message_id)
+        pass
 
     # delete the processing message
     msg_processing.delete()
