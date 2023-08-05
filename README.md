@@ -1,4 +1,5 @@
 # TelegramGermanVoiceMessageBot
+Telegram bot that can transcribe German voice messages.
 
 
 ## Info for using Docker
