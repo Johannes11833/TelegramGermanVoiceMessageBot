@@ -1,16 +1,10 @@
-FROM python:3
+FROM python:3-slim-buster
 
 WORKDIR /usr/src/app
 
 # install dependencies
 RUN apt update
 RUN apt install -y ffmpeg
-RUN apt install -y git
-RUN git clone https://github.com/Uberi/speech_recognition
-
-# install speech_recognition via pip
-WORKDIR /usr/src/app/speech_recognition
-RUN pip install -e .
 
 # copy the content of the local src directory to the working directory
 WORKDIR /usr/src/app/telegram_bot

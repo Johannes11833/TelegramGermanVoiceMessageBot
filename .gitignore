@@ -3,3 +3,5 @@
 /downloads
 /.idea
 /speech_recognition/
+/venv
+/__pycache__

@@ -1,2 +1,3 @@
 data/config.json
 docker-compose.yaml
+/venv

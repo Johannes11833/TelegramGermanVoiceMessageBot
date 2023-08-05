@@ -26,8 +26,10 @@ class RecognitionTarget:
         start = 0
         end = start + self.seg_len
         while start < sound.duration_seconds:
-            files.append(in_file.with_suffix(f'.{i}.wav'))
-            sound[start * 1000:min(end, sound.duration_seconds) * 1000].export(files[-1], format = "wav")
+            files.append(in_file.with_suffix(f".{i}.wav"))
+            sound[start * 1000 : min(end, sound.duration_seconds) * 1000].export(
+                files[-1], format="wav"
+            )
             start = end
             end += self.seg_len
             i += 1
@@ -47,7 +49,7 @@ class RecognitionTarget:
         if in_file.suffix in [".ogg", ".oga"]:
             return AudioSegment.from_ogg(in_file)
         elif in_file.suffix == ".opus":
-            return AudioSegment.from_file(in_file, codec = "opus")
+            return AudioSegment.from_file(in_file, codec="opus")
         elif in_file.suffix == ".m4a":
             return AudioSegment.from_file(in_file)
 
@@ -58,17 +60,26 @@ class Google(RecognitionTarget):
         self.seg_len = 180
 
     def recognize_speech(self, wav_file):
-        return self.speech_eng.recognize_google(self._get_data(wav_file = wav_file), language = self.lang)
+        return self.speech_eng.recognize_google(
+            self._get_data(wav_file=wav_file),
+            language=self.lang,
+            show_all=False,
+        )
 
 
 class Azure(RecognitionTarget):
     def __init__(self):
         super().__init__()
         self.seg_len = 60
-        with open('data/config.json') as json_file:
-            self.__API_KEY__ = json.load(json_file)['AZURE_key']
+        with open("data/config.json") as json_file:
+            self.__API_KEY__ = json.load(json_file)["AZURE_key"]
         self.service_loc = "westeurope"
 
     def recognize_speech(self, wav_file):
-        return self.speech_eng.recognize_azure(self._get_data(wav_file), language = self.lang, key = self.__API_KEY__,
-                                               location = self.service_loc)
+        return self.speech_eng.recognize_azure(
+            self._get_data(wav_file),
+            language=self.lang,
+            key=self.__API_KEY__,
+            location=self.service_loc,
+            show_all=False,
+        )[0]
