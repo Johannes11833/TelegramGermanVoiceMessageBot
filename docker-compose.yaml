@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+  voice_message_bot:
+    tty: true
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Berlin"
+    image: therealjohannes/telegram-voice-message-bot
+    volumes:
+      - ./data:/usr/src/app/telegram_bot/data
